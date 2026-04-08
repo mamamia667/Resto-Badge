@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 //Modifier Les éléments diférents avant de faire les constantes et d'importer le reste et tout regrouper dans le main
-class Dashbord extends StatefulWidget {
-  const Dashbord({super.key});
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
 
   @override
-  State<Dashbord> createState() => DashbordState();
+  State<Dashboard> createState() => DashboardState();
 }
 
-class DashbordState extends State<Dashbord> {
+class DashboardState extends State<Dashboard> {
   //Afficher les fénêtres contextuelles 
   bool isMenuActive = false;
   bool isPersonActive = false;

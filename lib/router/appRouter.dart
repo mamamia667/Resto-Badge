@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:restobadge/services/scannerscreen.dart';
+//import 'package:restobadge/views/dashboard.dart';
 //import 'package:restobadge/services/AuthService.dart';
-import 'package:restobadge/views/Facturation/facturation.dart';
+import 'package:restobadge/views/facturation.dart';
 import 'package:restobadge/views/login.dart';
 import 'package:restobadge/views/forgotPassword.dart';
 
@@ -32,7 +33,7 @@ class Approuter {
         GoRoute(
           path: "/scanner",
           builder: (context, state) => const ScannerScreen(),
-        )
+        ),
       ],
       
     );

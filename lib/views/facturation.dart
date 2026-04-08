@@ -21,6 +21,17 @@ class FacturationState extends State<Facturation> {
   bool isExpanded = false;
 //Controller du textField
 final TextEditingController pinController = TextEditingController();
+//image 
+Widget image(double rayon ) {
+  return  CircleAvatar(
+    backgroundImage: const NetworkImage(""),
+    radius: rayon,
+    onBackgroundImageError: (exception, stackTrace) {
+    },
+  );
+}
+//barre latéral 
+  double lateralBarWidth = 50;
 
 
 
@@ -31,8 +42,7 @@ final TextEditingController pinController = TextEditingController();
         backgroundColor: const Color(0xFF4A9EE8),
         titleSpacing: 0,
         leadingWidth: 800,
-        // On supprime le widget "leading" par défaut et on utilise "title"
-        // pour placer le logo + boutons à gauche
+        
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Row(
@@ -127,12 +137,7 @@ final TextEditingController pinController = TextEditingController();
                 isAvatarActive = !isAvatarActive;
               });
             },
-            child: CircleAvatar(
-              backgroundImage: const NetworkImage(""),
-              radius: 20,
-              onBackgroundImageError: (exception, stackTrace) {
-              },
-            ),
+            child: image(20)
           ),
           const SizedBox(width: 20),
         ],
@@ -145,42 +150,81 @@ final TextEditingController pinController = TextEditingController();
             children: [
               // ─── Barre latérale gauche ───────────────────────────────────
               SizedBox(
-                width: 50,
+                
+                width: isMenuActive ? lateralBarWidth = 100 : lateralBarWidth  ,
                 height: constraints.maxHeight,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 10),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.speed_sharp),
-                      color: Colors.grey,
-                      splashColor: const Color(0xFF4A9EE8),
-                      highlightColor: const Color(0xFF4A9EE8),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    isMenuActive 
+                    ? SizedBox(height: 3,
+                      child: Text("Menu de Navigation",style: TextStyle(fontSize: 15,color: Colors.grey, overflow: TextOverflow.ellipsis,)),
+                    ) 
+                    : SizedBox(height: 10),
+                    SizedBox(child: isPersonActive ? image(40): null)  ,
+                    const SizedBox(height: 20,), 
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            context.go("/Dashboard");
+                          },
+                          icon: const Icon(Icons.speed_sharp),
+                          style: ButtonStyle(
+                            iconColor: WidgetStateColor.resolveWith((states) {
+                              if (states.contains(WidgetState.pressed)) {
+                                return const Color(0xFF4A9EE8);
+                            }
+                            return Colors.black;
+                            }),
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        if (isMenuActive)
+                        const Expanded(
+                          child: Text(
+                            "Tableau de bord",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
+                    
                     const SizedBox(height: 20),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.person),
-                      color: Colors.grey,
-                      splashColor: const Color(0xFF4A9EE8),
-                      highlightColor: const Color(0xFF4A9EE8),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(height: 20),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.handyman_rounded),
-                      color: Colors.grey,
-                      splashColor: const Color(0xFF4A9EE8),
-                      highlightColor: const Color(0xFF4A9EE8),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: () {context.go("/");},//si je rends en une seule page mettre une variable ou le screen que je peux afficher 
+                          icon: const Icon(Icons.handyman_rounded),
+                          style: ButtonStyle(
+                            iconColor: WidgetStateColor.resolveWith((states) {
+                              if (states.contains(WidgetState.pressed)) {
+                                return const Color(0xFF4A9EE8);
+                            }
+                            return Colors.black;
+                            }),
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        if (isMenuActive)
+                        const Expanded(
+                          child: Text(
+                            "Facturation",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -199,16 +243,22 @@ final TextEditingController pinController = TextEditingController();
                       padding: const EdgeInsets.only(top: 5, left: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children:  [
                           Text(
                             "Accueil",
                             style: TextStyle(fontSize: 40, color: Colors.grey),
                           ),
                           SizedBox(height: 1),
-                          Text(
-                            "Tableau de bord",
-                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                          GestureDetector(
+                            onTap: (){
+                              context.go("/Dashboard");
+                            },
+                            child: Text(
+                              "Tableau de bord",
+                              style: TextStyle(fontSize: 10, color: Colors.blue),
+                            ),
                           ),
+                          
                         ],
                       ),
                     ),
