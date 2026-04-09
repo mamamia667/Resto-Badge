@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:go_router/go_router.dart';
+import 'package:restobadge/services/Scanner/NoPermissionScreen.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -118,7 +119,8 @@ class _ScannerScreenState extends State<ScannerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           color: Colors.white,
           icon : Icon(Icons.cancel),
@@ -139,40 +141,48 @@ class _ScannerScreenState extends State<ScannerScreen>
           
         ],
       ),
-      body: Stack(
-        
-        children: [
-          
-          MobileScanner(
-            controller: _controller,
-          ),
-          
-          
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
+      body: ValueListenableBuilder(
+  valueListenable: _controller,
+  builder: (context, value, child) {
+    //  Si permission NON accordée → affiche NoPermissionPage
+    if (!value.hasCameraPermission) {
+      context.go("/PermissionDenied");
+    }
 
-          // Hint text
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 40),
-              child: Text(
-                'Scanner le code QR',
-                style: TextStyle(color: Colors.white, fontSize: 30),
-              ),
+    //  Permission accordée → affiche le scanner normalement
+    return Stack(
+      children: [
+        MobileScanner(
+          controller: _controller,
+        ),
+        Container(
+          color: Colors.black.withValues(alpha :0.2),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: Container(
+            width: 260,
+            height: 260,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white, width: 3),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
-        ],
-      ), 
+        ),
+        const Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 40),
+            child: Text(
+              'Scanner le code QR',
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          ),
+        ),
+      ],
+    );
+  },
+), 
     );
   }
 }

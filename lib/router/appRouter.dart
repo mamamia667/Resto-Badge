@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
-import 'package:restobadge/services/scannerscreen.dart';
+import 'package:restobadge/services/Scanner/NoPermissionScreen.dart';
+import 'package:restobadge/services/Scanner/scannerscreen.dart';
 //import 'package:restobadge/views/dashboard.dart';
 //import 'package:restobadge/services/AuthService.dart';
 import 'package:restobadge/views/facturation.dart';
@@ -33,6 +34,10 @@ class Approuter {
         GoRoute(
           path: "/scanner",
           builder: (context, state) => const ScannerScreen(),
+        ),
+        GoRoute(
+          path: "/PermissionDenied",
+          builder: (context, state) => const NoPermissionScreen(),
         ),
       ],
       

@@ -18,7 +18,7 @@ class FacturationState extends State<Facturation> {
   bool isAvatarActive = false;
 
   // ExpansionTile
-  bool isExpanded = false;
+  bool isExpanded = true;
 //Controller du textField
 final TextEditingController pinController = TextEditingController();
 //image 

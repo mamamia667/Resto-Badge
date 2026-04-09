@@ -6,6 +6,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Cette application a besoin de la caméra pour scanner les codes QR</string>
 	<key>CFBundleDisplayName</key>
 	<string>Restobadge</string>
 	<key>CFBundleExecutable</key>
