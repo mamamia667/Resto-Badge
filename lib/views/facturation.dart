@@ -31,7 +31,7 @@ Widget image(double rayon ) {
   );
 }
 //barre latéral 
-  double lateralBarWidth = 50;
+  
 
 
 
@@ -43,7 +43,39 @@ Widget image(double rayon ) {
         titleSpacing: 0,
         leadingWidth: 800,
         
-        title: Padding(
+        title: isSearchActive ?  
+        Row(
+          children: [
+            const SizedBox(width: 10),
+            Expanded(
+              child:TextField(
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: "Saisir le texte ici pour rechercher ...",
+                  hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
+                  border: InputBorder.none, 
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1.5),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                onChanged: (value) {
+                  // TODO : logique de recherche
+                },
+              ), 
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () {
+                setState(() {
+                  isSearchActive = false;
+                });
+              },
+            )  
+          ],
+        )
+        : Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -54,7 +86,6 @@ Widget image(double rayon ) {
               ),
               const SizedBox(width: 15),
 
-            
               IconButton(
                 icon: const Icon(Icons.menu_rounded, size: 15),
                 onPressed: () {
@@ -94,7 +125,8 @@ Widget image(double rayon ) {
             ],
           ),
         ),
-        actions: [
+        actions:  isSearchActive ? [] 
+        :[
           IconButton(
             icon: const Icon(Icons.search, size: 15),
             onPressed: () {
@@ -151,53 +183,57 @@ Widget image(double rayon ) {
               // ─── Barre latérale gauche ───────────────────────────────────
               SizedBox(
                 
-                width: isMenuActive ? lateralBarWidth = 100 : lateralBarWidth  ,
-                height: constraints.maxHeight,
+                width: isMenuActive ? 150 : 50 ,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     isMenuActive 
-                    ? SizedBox(height: 3,
-                      child: Text("Menu de Navigation",style: TextStyle(fontSize: 15,color: Colors.grey, overflow: TextOverflow.ellipsis,)),
-                    ) 
+                    ? const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        "Menu de Navigation",
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
                     : SizedBox(height: 10),
                     SizedBox(child: isPersonActive ? image(40): null)  ,
                     const SizedBox(height: 20,), 
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            context.go("/Dashboard");
-                          },
-                          icon: const Icon(Icons.speed_sharp),
-                          style: ButtonStyle(
-                            iconColor: WidgetStateColor.resolveWith((states) {
-                              if (states.contains(WidgetState.pressed)) {
-                                return const Color(0xFF4A9EE8);
-                            }
-                            return Colors.black;
-                            }),
+                    Center( 
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min, 
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              context.go("/Dashboard");
+                            },
+                            icon: const Icon(Icons.speed_sharp),
+                            style: ButtonStyle(
+                              iconColor: WidgetStateColor.resolveWith((states) {
+                                if (states.contains(WidgetState.pressed)) {
+                                  return const Color(0xFF4A9EE8);
+                                }
+                                return Colors.black;
+                              }),
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                           ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        if (isMenuActive)
-                        const Expanded(
-                          child: Text(
-                            "Tableau de bord",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                          if (isMenuActive)
+                            const Text(
+                              "Tableau de bord",
+                              style: TextStyle(fontSize: 12, color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
                     ),
-                    
                     const SizedBox(height: 20),
-                    Row(
+                    Center(
+                      child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -216,15 +252,15 @@ Widget image(double rayon ) {
                           constraints: const BoxConstraints(),
                         ),
                         if (isMenuActive)
-                        const Expanded(
-                          child: Text(
-                            "Facturation",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        const Text(
+                          "Facturation",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     )
+                    ),
+                    
                   ],
                 ),
               ),
@@ -248,7 +284,6 @@ Widget image(double rayon ) {
                             "Accueil",
                             style: TextStyle(fontSize: 40, color: Colors.grey),
                           ),
-                          SizedBox(height: 1),
                           GestureDetector(
                             onTap: (){
                               context.go("/Dashboard");
