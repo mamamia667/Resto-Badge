@@ -42,7 +42,7 @@ class FacturationState extends State<Facturation> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Accueil",
+                  "Facturation",
                   //  Taille adaptative selon l'écran
                   style: TextStyle(
                     fontSize: tablet ? 52 : 36,

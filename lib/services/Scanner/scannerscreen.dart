@@ -83,7 +83,7 @@ class _ScannerScreenState extends State<ScannerScreen>
         actions: [
           TextButton(
             onPressed: () {
-              context.pop(context);
+              context.pop();
               unawaited(_controller.start()); // reprends le scan
             },
             child: const Text('Scan Again'),//modifiable
@@ -146,7 +146,7 @@ class _ScannerScreenState extends State<ScannerScreen>
         builder: (context, value, child) {
           //  Si permission NON accordée → affiche NoPermissionPage
           if (!value.hasCameraPermission) {
-            context.go("/PermissionDenied");
+            return const NoPermissionScreen(); 
           }
 
           //  Permission accordée → affiche le scanner normalement

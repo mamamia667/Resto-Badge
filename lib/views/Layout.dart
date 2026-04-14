@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:restobadge/views/dashboard.dart';
 import 'package:restobadge/views/Facturation.dart';
 
@@ -13,14 +12,16 @@ class Layout extends StatefulWidget {
 class LayoutState extends State<Layout> {
   // Afficher les fenêtres contextuelles
   bool isMenuActive = false;
-  bool isPersonActive = false;
+  //bool isPersonActive = false;
   bool isSearchActive = false;
   bool isSettingsActive = false;
   bool isAvatarActive = false;
 
+  //Controller de la recherche 
+  final TextEditingController searchController = TextEditingController();
+
   //Page Active 
   Widget activePage = const Facturation();
-  
 
   // Clé globale pour contrôler le Scaffold
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -42,76 +43,98 @@ class LayoutState extends State<Layout> {
         color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
             
             // Titre du menu
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                "Menu de Navigation",
-                style: TextStyle(fontSize: 13, color: Colors.grey),
-                overflow: TextOverflow.ellipsis,
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Center(
+                  child: Text(
+                  "Menu de Navigation",
+                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                ), 
               ),
-            ),
-            
             // Avatar
-            if (isPersonActive) 
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: image(40),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: image(40),
+                ),
               ),
+              
             
             const SizedBox(height: 20),
 
             // Élément Tableau de bord
-            _buildDrawerItem(
-              icon: Icons.speed_sharp,
-              label: "Tableau de bord",
-              onTap: () {
-                setState(() => activePage = const Dashboard());
-                _scaffoldKey.currentState?.closeDrawer();
-              },
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() => activePage = const Dashboard());
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.speed_sharp),
+                    style: ButtonStyle(
+                      iconColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.pressed)) {
+                          return const Color(0xFF4A9EE8);
+                        }
+                        return Colors.black;
+                      }),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 8),
+                  
+                    const Text(
+                      "Tableau de bord",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
             ),
-
             const SizedBox(height: 20),
 
             // Élément Facturation
-            _buildDrawerItem(
-              icon: Icons.handyman_rounded,
-              label: "Facturation",
-              onTap: () {
-                setState(() => activePage = const Facturation());
-                _scaffoldKey.currentState?.closeDrawer();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget pour un élément du drawer
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start ,
-          children: [
-            Icon(icon, color: Colors.black87, size: 20),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-                overflow: TextOverflow.ellipsis,
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                //mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() => activePage = const Facturation());
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.handyman_rounded),
+                    style: ButtonStyle(
+                      iconColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.pressed)) {
+                          return const Color(0xFF4A9EE8);
+                        }
+                        return Colors.black;
+                      }),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 8),
+                    const Text(
+                      "Facturation",
+                      style: TextStyle(fontSize: 13, color: Colors.grey),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
               ),
             ),
           ],
@@ -126,16 +149,18 @@ class LayoutState extends State<Layout> {
       key: _scaffoldKey,
       drawer: _buildDrawer(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF4A9EE8),
         titleSpacing: 0,
-        leadingWidth: 800,
-        
+  
         title: isSearchActive ?  
         Row(
           children: [
             const SizedBox(width: 10),
             Expanded(
               child: TextField(
+              
+                controller: searchController,
                 autofocus: true,
                 decoration: InputDecoration(
                   hintText: "Saisir le texte ici pour rechercher ...",
@@ -148,7 +173,8 @@ class LayoutState extends State<Layout> {
                 style: const TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 onChanged: (value) {
-                  // TODO : logique de recherche
+                  // TODO : logique de recherche pour les étudiants !!
+                  
                 },
               ), 
             ),
@@ -173,7 +199,7 @@ class LayoutState extends State<Layout> {
               ),
               const SizedBox(width: 15),
 
-              // Bouton pour ouvrir/fermer le drawer
+              // LE MÊME BOUTON QUI GÉRAIT LA BARRE LATÉRALE, GÈRE MAINTENANT LE DRAWER
               IconButton(
                 icon: const Icon(Icons.menu_rounded, size: 15),
                 onPressed: () {
@@ -199,7 +225,7 @@ class LayoutState extends State<Layout> {
 
               const SizedBox(width: 3),
 
-              IconButton(
+              /*IconButton(
                 icon: const Icon(Icons.person, size: 15),
                 onPressed: () {
                   setState(() {
@@ -214,7 +240,7 @@ class LayoutState extends State<Layout> {
                     return Colors.white;
                   }),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),
@@ -270,19 +296,16 @@ class LayoutState extends State<Layout> {
 
       body: activePage,
 
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Text(
-              "© 2023 - 2026, Direction des Systèmes d'Informations (DSI)",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-          ],
-        ),
+      bottomNavigationBar: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const [
+          Text(
+            "© 2023 - 2026, Direction des Systèmes d'Informations (DSI)",
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+        ],
       ),
     );
   }
