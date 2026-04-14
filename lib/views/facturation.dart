@@ -50,7 +50,7 @@ class FacturationState extends State<Facturation> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => context.go("/Dashboard"),
+                  onTap: () => context.go("/Dashboard"),//changer le activePage
                   child: const Text(
                     "Tableau de bord",
                     style: TextStyle(fontSize: 12, color: Colors.blue),

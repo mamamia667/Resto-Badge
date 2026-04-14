@@ -71,14 +71,14 @@ class _ScannerScreenState extends State<ScannerScreen>
     final value = barcode.rawValue;
     if (value == null) return;
 
-    // Stop scanner to avoid repeated detections
+    // arrête le scanner pour éviter plusieur scans !
     unawaited(_controller.stop());
 
-    // Show result
+    // afficher les résultats
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Scanned!'),//modifiable
+        title: const Text('Scanned!'),//si le resultat est négatif afficher un dialog et revenir au scan sinon retourner à facturation 
         content: SelectableText(value),
         actions: [
           TextButton(

@@ -14,14 +14,18 @@ class LayoutState extends State<Layout> {
   bool isMenuActive = false;
   //bool isPersonActive = false;
   bool isSearchActive = false;
-  bool isSettingsActive = false;
+  //bool isSettingsActive = false;
   bool isAvatarActive = false;
 
   //Controller de la recherche 
   final TextEditingController searchController = TextEditingController();
-
+@override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
   //Page Active 
-  Widget activePage = const Facturation();
+    Widget activePage = const Facturation();
 
   // Clé globale pour contrôler le Scaffold
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -264,7 +268,7 @@ class LayoutState extends State<Layout> {
           ),
           const SizedBox(width: 10),
 
-          IconButton(
+          /*IconButton(
             icon: const Icon(Icons.settings, size: 15),
             onPressed: () {
               setState(() {
@@ -279,7 +283,7 @@ class LayoutState extends State<Layout> {
                 return Colors.white;
               }),
             ),
-          ),
+          ),*/
           const SizedBox(width: 10),
 
           GestureDetector(
