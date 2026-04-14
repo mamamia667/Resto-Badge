@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
+
+
 class Facturation extends StatefulWidget {
   const Facturation({super.key});
 
@@ -10,591 +12,315 @@ class Facturation extends StatefulWidget {
 }
 
 class FacturationState extends State<Facturation> {
-  // Afficher les fenêtres contextuelles
-  bool isMenuActive = false;
-  bool isPersonActive = false;
-  bool isSearchActive = false;
-  bool isSettingsActive = false;
-  bool isAvatarActive = false;
-
-  // ExpansionTile
   bool isExpanded = true;
-//Controller du textField
-final TextEditingController pinController = TextEditingController();
-//image 
-Widget image(double rayon ) {
-  return  CircleAvatar(
-    backgroundImage: const NetworkImage(""),
-    radius: rayon,
-    onBackgroundImageError: (exception, stackTrace) {
-    },
-  );
-}
-//barre latéral 
-  
+  final TextEditingController pinController = TextEditingController();
 
+  // ── Helper ──────────────────────────────────────────────
+  bool _isTablet(BuildContext context) =>
+      MediaQuery.of(context).size.shortestSide >= 600;
 
+  @override
+  void dispose() {
+    pinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF4A9EE8),
-        titleSpacing: 0,
-        leadingWidth: 800,
-        
-        title: isSearchActive ?  
-        Row(
-          children: [
-            const SizedBox(width: 10),
-            Expanded(
-              child:TextField(
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: "Saisir le texte ici pour rechercher ...",
-                  hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
-                  border: InputBorder.none, 
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
+    final tablet = _isTablet(context);
+    //final screenWidth = MediaQuery.of(context).size.width;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          // ─── En-tête ───────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Accueil",
+                  //  Taille adaptative selon l'écran
+                  style: TextStyle(
+                    fontSize: tablet ? 52 : 36,
+                    color: Colors.grey,
                   ),
                 ),
-                style: const TextStyle(color: Colors.white),
-                cursorColor: Colors.white,
-                onChanged: (value) {
-                  // TODO : logique de recherche
-                },
-              ), 
+                GestureDetector(
+                  onTap: () => context.go("/Dashboard"),
+                  child: const Text(
+                    "Tableau de bord",
+                    style: TextStyle(fontSize: 12, color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  isSearchActive = false;
-                });
+          ),
+
+          const Divider(thickness: 1),
+          const SizedBox(height: 10),
+
+          // ─── Cartes statistiques ───────────────────────
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final tablet = constraints.maxWidth >= 600;
+                return GridView.count(
+                  crossAxisCount: tablet ? 2 : 1,  //  2 colonnes tablette, 1 mobile
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: tablet ? 3.5 : 4.0,
+                  children: [
+                    // Carte repas servis
+                    StatCard(
+                      color: Colors.red,
+                      icon: Icons.coffee_outlined,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "Nombre de repas servis : Données",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "Service en cours : Données",
+                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            "Prix : Données",
+                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    /* Espacement adaptatif (Ajouter quand j'utilise une AVD)
+                    SizedBox(width: screenWidth * 0.03),*/
+
+                    // Carte QR code
+                    StatCard(
+                      color: Colors.blue,
+                      icon: Icons.qr_code_2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton(
+                            style: ButtonStyle(
+                              foregroundColor: WidgetStateProperty.resolveWith<Color?>(
+                                (s) => s.contains(WidgetState.pressed)
+                                    ? Colors.white
+                                    : const Color(0xFF4A9EE8),
+                              ),
+                              backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                                (s) => s.contains(WidgetState.pressed)
+                                    ? const Color(0xFF4A9EE8)
+                                    : Colors.transparent,
+                              ),
+                              side: WidgetStateProperty.all(
+                                const BorderSide(color: Color(0xFF4A9EE8), width: 1.5),
+                              ),
+                              shape:  WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(3)),
+                              ),
+                            ),
+                            onPressed: () => context.go("/scanner"),
+                            child: const Text("Lecture"),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text(
+                            "Cliquez pour lire le QR",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
               },
-            )  
-          ],
-        )
-        : Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/inphblogo.png',
-                height: 40,
-              ),
-              const SizedBox(width: 15),
+            ),
+          ),
 
-              IconButton(
-                icon: const Icon(Icons.menu_rounded, size: 15),
-                onPressed: () {
-                  setState(() {
-                    isMenuActive = !isMenuActive;
-                  });
-                },
-                style: ButtonStyle(
-                  iconColor: WidgetStateColor.resolveWith((states) {
-                    if (states.contains(WidgetState.pressed)) {
-                      return const Color(0xFF4A9EE8); 
-                    }
-                    return Colors.white;
-                  }),
+          const SizedBox(height: 12),
+
+          // ─── Carte Code Pin ────────────────────────────
+          Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: tablet ? 600 : double.infinity,
+              ),
+              child: Card(
+                elevation: 11,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ExpansionTile(
+                    initiallyExpanded: true,
+                    tilePadding: EdgeInsets.zero,
+                    childrenPadding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, bottom: 8.0),
+                    shape: const RoundedRectangleBorder(
+                        side: BorderSide.none),
+                    collapsedShape: const RoundedRectangleBorder(
+                        side: BorderSide.none),
+                    title: const Text(
+                      "Entrez votre Code Pin ou le Token de Validation",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    trailing: Icon(
+                      isExpanded ? Icons.remove : Icons.add,
+                      color: Colors.grey,
+                    ),
+                    onExpansionChanged: (v) =>
+                        setState(() => isExpanded = v),
+                    children: [
+                      const ListTile(
+                          title: Text("Code Pin ou le Token *")),
+                      const SizedBox(height: 3),
+                      TextField(
+                        controller: pinController,
+                        obscureText: true,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 14),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        //  Bouton pleine largeur
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          style: ButtonStyle(
+                            foregroundColor:
+                                const WidgetStatePropertyAll(Colors.white),
+                            backgroundColor: const WidgetStatePropertyAll(
+                                Color(0xFF4A9EE8)),
+                            side: WidgetStateProperty.all(
+                              const BorderSide(
+                                  color: Color(0xFF4A9EE8), width: 1.5),
+                            ),
+                            shape: WidgetStateProperty.resolveWith(
+                              (s) => RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            // TODO : vérifier le token
+                          },
+                          child: const Text("Valider"),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            ),
+          ),
 
-              const SizedBox(width: 3),
+          const SizedBox(height: 12),
 
-            
-              IconButton(
-                icon: const Icon(Icons.person, size: 15),
-                onPressed: () {
-                  setState(() {
-                    isPersonActive = !isPersonActive;
-                  });
-                },
-                style: ButtonStyle(
-                  iconColor: WidgetStateColor.resolveWith((states) {
-                    if (states.contains(WidgetState.pressed)) {
-                      return const Color(0xFF4A9EE8);
-                    }
-                    return Colors.white;
-                  }),
+          // ─── 10 dernières personnes ────────────────────
+          Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                //  Limité en largeur sur tablette
+                maxWidth: /*tablet ? 600 :*/ double.infinity,
+              ),
+              child: Card(
+                elevation: 11,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                            "Les 10 dernières personnes enregistrées"),
+                      ),
+                      Center(
+                        child: Text(
+                          "Aucun étudiant trouvé",
+                          style:
+                              TextStyle(color: Colors.grey, fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+
+class StatCard extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final Widget child;
+
+  const StatCard({
+    super.key,
+    required this.color,
+    required this.icon,
+    required this.child,
+  });
+
+  bool _isTablet(BuildContext context) =>
+      MediaQuery.of(context).size.shortestSide >= 600;
+
+  @override
+  Widget build(BuildContext context) {
+    final tablet = _isTablet(context);
+    final cardHeight = tablet ? 120.0 : 100.0;
+    final iconSize = tablet ? 50.0 : 36.0;
+
+    return Row(
+      children: [
+        // ── Icône colorée ──────────────────────────────
+        Container(
+          height: cardHeight,
+          width: cardHeight,
+          color: color,
+          child: Center(
+            child: Icon(icon, size: iconSize, color: Colors.white),
           ),
         ),
-        actions:  isSearchActive ? [] 
-        :[
-          IconButton(
-            icon: const Icon(Icons.search, size: 15),
-            onPressed: () {
-              setState(() {
-                isSearchActive = !isSearchActive;
-              });
-            },
-            style: ButtonStyle(
-              iconColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return const Color(0xFF4A9EE8);
-                }
-                return Colors.white;
-              }),
-            ),
+
+        // ── Contenu ────────────────────────────────────
+        Expanded(
+          child: Container(
+            height: cardHeight,
+            color: Colors.white70,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: child,
           ),
-          const SizedBox(width: 10),
-
-          IconButton(
-            icon: const Icon(Icons.settings, size: 15),
-            onPressed: () {
-              setState(() {
-                isSettingsActive = !isSettingsActive;
-              });
-            },
-            style: ButtonStyle(
-              iconColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return const Color(0xFF4A9EE8);
-                }
-                return Colors.white;
-              }),
-            ),
-          ),
-          const SizedBox(width: 10),
-
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isAvatarActive = !isAvatarActive;
-              });
-            },
-            child: image(20)
-          ),
-          const SizedBox(width: 20),
-        ],
-      ),
-
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ─── Barre latérale gauche ───────────────────────────────────
-              SizedBox(
-                
-                width: isMenuActive ? 150 : 50 ,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    isMenuActive 
-                    ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        "Menu de Navigation",
-                        style: TextStyle(fontSize: 13, color: Colors.grey),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                    : SizedBox(height: 10),
-                    SizedBox(child: isPersonActive ? image(40): null)  ,
-                    const SizedBox(height: 20,), 
-
-                    Center( 
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min, 
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              context.go("/Dashboard");
-                            },
-                            icon: const Icon(Icons.speed_sharp),
-                            style: ButtonStyle(
-                              iconColor: WidgetStateColor.resolveWith((states) {
-                                if (states.contains(WidgetState.pressed)) {
-                                  return const Color(0xFF4A9EE8);
-                                }
-                                return Colors.black;
-                              }),
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                          if (isMenuActive)
-                            const Text(
-                              "Tableau de bord",
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () {context.go("/");},//si je rends en une seule page mettre une variable ou le screen que je peux afficher 
-                          icon: const Icon(Icons.handyman_rounded),
-                          style: ButtonStyle(
-                            iconColor: WidgetStateColor.resolveWith((states) {
-                              if (states.contains(WidgetState.pressed)) {
-                                return const Color(0xFF4A9EE8);
-                            }
-                            return Colors.black;
-                            }),
-                          ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        if (isMenuActive)
-                        const Text(
-                          "Facturation",
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    )
-                    ),
-                    
-                  ],
-                ),
-              ),
-
-              const VerticalDivider(thickness: 1, color: Colors.grey),
-
-              // ─── Contenu principal ───────────────────────────────────────
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // En-tête de page
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5, left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children:  [
-                          Text(
-                            "Accueil",
-                            style: TextStyle(fontSize: 40, color: Colors.grey),
-                          ),
-                          GestureDetector(
-                            onTap: (){
-                              context.go("/Dashboard");
-                            },
-                            child: Text(
-                              "Tableau de bord",
-                              style: TextStyle(fontSize: 10, color: Colors.blue),
-                            ),
-                          ),
-                          
-                        ],
-                      ),
-                    ),
-
-                    const Divider(thickness: 1),
-                    const SizedBox(height: 10),
-
-                    // ─── Cartes statistiques ─────────────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                // Carte repas servis
-                                Container(
-                                  height: 100,
-                                  width: 120,
-                                  color: Colors.red,
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.coffee_outlined,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Container(
-                                    height: 100,
-                                    width: 500,
-                                    color: Colors.white70,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: const [
-                                        Text(
-                                          "Nombre de repas servis : Données",
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          "Service en cours : Données",
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w100,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2),
-                                        Text(
-                                          "Prix : Données",
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w100,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 30),
-
-                                // Carte QR code
-                                Container(
-                                  height: 100,
-                                  width: 120,
-                                  color: Colors.blue,
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.qr_code_2,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Container(
-                                    height: 100,
-                                    width: 500,
-                                    color: Colors.white70,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        OutlinedButton(
-                                          style: ButtonStyle(
-                                            foregroundColor:
-                                                WidgetStateProperty.resolveWith<Color?>(
-                                              (states) {
-                                                if (states.contains(WidgetState.pressed)) {
-                                                  return Colors.white;
-                                                }
-                                                return const Color(0xFF4A9EE8);
-                                              },
-                                            ),
-                                            backgroundColor:
-                                                WidgetStateProperty.resolveWith<Color?>(
-                                              (states) {
-                                                if (states.contains(WidgetState.pressed)) {
-                                                  return const Color(0xFF4A9EE8);
-                                                }
-                                                return Colors.transparent;
-                                              },
-                                            ),
-                                            side: WidgetStateProperty.all(
-                                              const BorderSide(
-                                                color: Color(0xFF4A9EE8),
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            shape: WidgetStatePropertyAll(
-                                              RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(3),
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            // Retournez vers le scanner avec GoRouter
-                                            context.go("/scanner");
-                                          },
-                                          child: const Text("Lecture"),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        const Text(
-                                          "Cliquez sur le bouton pour lire le code QR",
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w100,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // ─── Carte : saisie du Code Pin / Token ──────────────
-                    Card(
-                      elevation: 11,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ExpansionTile(
-                          initiallyExpanded: true,
-                          tilePadding: EdgeInsets.zero,
-                          childrenPadding: const EdgeInsets.only(
-                            left: 16.0,
-                            right: 16.0,
-                            bottom: 8.0,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            side: BorderSide.none,
-                          ),
-                          collapsedShape: const RoundedRectangleBorder(
-                            side: BorderSide.none,
-                          ),
-                          title: const Text(
-                            "Entrez votre Code Pin ou le Token de Validation",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          trailing: Icon(
-                            isExpanded ? Icons.remove : Icons.add,
-                            color: Colors.grey,
-                          ),
-                          onExpansionChanged: (value) {
-                            setState(() {
-                              isExpanded = value;
-                            });
-                          },
-                          children: [
-                            const ListTile(
-                              title: Text("Code Pin ou le Token de Validation *"),
-                            ),
-                            const SizedBox(height: 3),
-                            TextField(
-                              controller: pinController,
-                              obscureText: true,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              // TODO : ajouter un TextEditingController pour récupérer la valeur
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 14,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            OutlinedButton(
-                              style: ButtonStyle(
-                                foregroundColor:
-                                    const WidgetStatePropertyAll(Colors.white),
-                                backgroundColor: const WidgetStatePropertyAll(
-                                  Color(0xFF4A9EE8),
-                                ),
-                                side: WidgetStateProperty.all(
-                                  const BorderSide(
-                                    color: Color(0xFF4A9EE8),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                shape: WidgetStateProperty.resolveWith(
-                                  (states) {
-                                    if (states.contains(WidgetState.pressed)) {
-                                      return RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(3),
-                                        side: const BorderSide(
-                                          color: Colors.blue,
-                                          width: 4,
-                                        ),
-                                      );
-                                    }
-                                    return RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3),
-                                    );
-                                  },
-                                ),
-                              ),
-                              onPressed: () {
-                                // TODO : vérifier le token, valider le contenu
-                                // du TextField, actualiser le compteur de repas servis
-                              },
-                              child: const Text("Valider"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), // ✅ Fermeture Card "Code Pin"
-
-                    const SizedBox(height: 12),
-
-                    // ─── Carte : 10 dernières personnes enregistrées ──────
-                    Center(
-                      child: Card(
-                        elevation: 11,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "Les 10 dernières personnes enregistrées",
-                                ),
-                              ),
-                              // TODO : remplacer par une ListView quand les données sont disponibles
-                              const Center(
-                                child: Text(
-                                  "Aucun étudiant trouvé",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ), // ✅ Fermeture Card "10 dernières personnes"
-
-                  ],
-                ),
-              ), // ✅ Fermeture Expanded
-            ],
-          ); // ✅ Fermeture Row principale du body
-        },
-      ), // ✅ Fermeture LayoutBuilder
-
-      // ─── Pied de page ────────────────────────────────────────────────────
-      bottomNavigationBar: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Text(
-            "© 2023 - 2026, Direction des Systèmes d'Informations (DSI)",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-        ],
-      ),
-    ); // ✅ Fermeture Scaffold
+        ),
+      ],
+    );
   }
 }

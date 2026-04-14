@@ -1,9 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:restobadge/services/Scanner/NoPermissionScreen.dart';
 import 'package:restobadge/services/Scanner/scannerscreen.dart';
+import 'package:restobadge/views/Layout.dart';
+import 'package:restobadge/views/dashboard.dart';
 //import 'package:restobadge/views/dashboard.dart';
 //import 'package:restobadge/services/AuthService.dart';
-import 'package:restobadge/views/facturation.dart';
+//import 'package:restobadge/views/refactor/facturationRefactor.dart';
 import 'package:restobadge/views/login.dart';
 import 'package:restobadge/views/forgotPassword.dart';
 
@@ -25,7 +27,7 @@ class Approuter {
         ),
         GoRoute(
           path: '/',
-          builder: (context, state) => const Facturation(),
+          builder: (context, state) => const Layout(),
         ),
         GoRoute(
           path: '/forgotPassword',
@@ -39,8 +41,12 @@ class Approuter {
           path: "/PermissionDenied",
           builder: (context, state) => const NoPermissionScreen(),
         ),
-      ],
-      
+        
+        GoRoute(
+          path: "/Dashboard",
+          builder: (context, state) => const Dashboard(),
+        )
+      ],      
     );
 
 

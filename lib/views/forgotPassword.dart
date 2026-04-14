@@ -8,10 +8,4 @@ class ForgotPassword extends StatelessWidget{
     return Scaffold();
   }
 
-
-
-
-
-
-
 }

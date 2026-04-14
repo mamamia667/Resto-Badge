@@ -101,10 +101,10 @@ class _ScannerScreenState extends State<ScannerScreen>
     await _controller.toggleTorch();
     setState(() => _torchOn = !_torchOn);
   }
-//changer de camra
-  Future<void> _switchCamera() async {
+//changer de caméra
+  /*Future<void> _switchCamera() async {
     await _controller.switchCamera();
-  }
+  }*/
 //libérez la caméra
   @override
   Future<void> dispose() async {
@@ -133,56 +133,58 @@ class _ScannerScreenState extends State<ScannerScreen>
             onPressed: _toggleTorch,
           ),
           // Switch camera
-          IconButton(
+          /*  IconButton(
             color: Colors.white,
             icon: const Icon(Icons.cameraswitch),
             onPressed: _switchCamera,
-          ),
+          ),*/
           
         ],
       ),
       body: ValueListenableBuilder(
-  valueListenable: _controller,
-  builder: (context, value, child) {
-    //  Si permission NON accordée → affiche NoPermissionPage
-    if (!value.hasCameraPermission) {
-      context.go("/PermissionDenied");
-    }
+        valueListenable: _controller,
+        builder: (context, value, child) {
+          //  Si permission NON accordée → affiche NoPermissionPage
+          if (!value.hasCameraPermission) {
+            context.go("/PermissionDenied");
+          }
 
-    //  Permission accordée → affiche le scanner normalement
-    return Stack(
-      children: [
-        MobileScanner(
-          controller: _controller,
-        ),
-        Container(
-          color: Colors.black.withValues(alpha :0.2),
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Container(
-            width: 260,
-            height: 260,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        const Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 40),
-            child: Text(
-              'Scanner le code QR',
-              style: TextStyle(color: Colors.white, fontSize: 30),
-            ),
-          ),
-        ),
-      ],
-    );
-  },
-), 
+          //  Permission accordée → affiche le scanner normalement
+          return Stack(
+            children: [
+              MobileScanner(
+                controller: _controller,
+              ),
+              Container(
+                color: Colors.grey.withValues(alpha :0.2),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 260,
+                  height: 260,
+                  
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(color: Colors.white, width: 3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 40),
+                  child: Text(
+                    'Placez le code QR dans la zone de scan',
+                    style: TextStyle(color: Colors.white, fontSize: 22),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ), 
     );
   }
 }
