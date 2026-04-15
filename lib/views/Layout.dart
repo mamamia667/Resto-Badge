@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+// Remplace par tes vrais chemins d'importation
 import 'package:restobadge/views/dashboard.dart';
 import 'package:restobadge/views/Facturation.dart';
+
 
 class Layout extends StatefulWidget {
   const Layout({super.key});
@@ -10,136 +12,114 @@ class Layout extends StatefulWidget {
 }
 
 class LayoutState extends State<Layout> {
-  // Afficher les fenêtres contextuelles
-  bool isMenuActive = false;
-  //bool isPersonActive = false;
   bool isSearchActive = false;
-  //bool isSettingsActive = false;
   bool isAvatarActive = false;
 
-  //Controller de la recherche 
   final TextEditingController searchController = TextEditingController();
-@override
+  
+  // Page par défaut
+  Widget activePage = const Facturation();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
   void dispose() {
     searchController.dispose();
     super.dispose();
   }
-  //Page Active 
-    Widget activePage = const Facturation();
 
-  // Clé globale pour contrôler le Scaffold
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  //image 
+  // Gestionnaire d'image avec fallback si l'URL est vide
   Widget image(double rayon) {
     return CircleAvatar(
-      backgroundImage: const NetworkImage(""),
       radius: rayon,
-      onBackgroundImageError: (_, _) {},
+      backgroundColor: Colors.grey[300],
+      backgroundImage: const NetworkImage("https://via.placeholder.com/150"), // Mets ton URL ici
+      onBackgroundImageError: (_, __) => const Icon(Icons.person, color: Colors.white),
+      child: const Icon(
+        Icons.person, 
+        color: Colors.white,
+        size: 20,
+      )
     );
   }
 
-  // Widget du drawer
+  // --- Widget helper pour les éléments du Drawer ---
+  Widget _drawerItem({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    const Color activeColor = Color(0xFF4A9EE8);
+    const Color inactiveColor = Colors.black54;
+
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isActive ? activeColor : inactiveColor,
+        size: 22,
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          color: isActive ? activeColor : inactiveColor,
+          fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+        ),
+      ),
+      onTap: onTap,
+      dense: true,
+      horizontalTitleGap: 0, // Aligne l'icône plus près du texte
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+    );
+  }
+
+  // --- Widget du Drawer ---
   Widget _buildDrawer() {
     return Drawer(
-      width:  200 ,
+      width: 230,
       child: Container(
         color: Colors.white,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            
-            // Titre du menu
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Center(
-                  child: Text(
-                  "Menu de Navigation",
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
-                  overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 60),
+            Center(child: image(40)),
+            const SizedBox(height: 15),
+            const Center(
+              child: Text(
+                "Menu de Navigation",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
                 ),
-                ), 
-              ),
-            // Avatar
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: image(40),
-                ),
-              ),
-              
-            
-            const SizedBox(height: 20),
-
-            // Élément Tableau de bord
-            Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() => activePage = const Dashboard());
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.speed_sharp),
-                    style: ButtonStyle(
-                      iconColor: WidgetStateColor.resolveWith((states) {
-                        if (states.contains(WidgetState.pressed)) {
-                          return const Color(0xFF4A9EE8);
-                        }
-                        return Colors.black;
-                      }),
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  const SizedBox(width: 8),
-                  
-                    const Text(
-                      "Tableau de bord",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
+            const Divider(height: 1),
+            const SizedBox(height: 10),
 
-            // Élément Facturation
-            Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                //mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() => activePage = const Facturation());
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.handyman_rounded),
-                    style: ButtonStyle(
-                      iconColor: WidgetStateColor.resolveWith((states) {
-                        if (states.contains(WidgetState.pressed)) {
-                          return const Color(0xFF4A9EE8);
-                        }
-                        return Colors.black;
-                      }),
-                    ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                  const SizedBox(width: 8),
-                    const Text(
-                      "Facturation",
-                      style: TextStyle(fontSize: 13, color: Colors.grey),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
+            // Item Tableau de bord
+            _drawerItem(
+              icon: Icons.speed_sharp,
+              label: "Tableau de bord",
+              isActive: activePage is Dashboard,
+              onTap: () {
+                setState(() => activePage = const Dashboard());
+                Navigator.pop(context);
+              },
+            ),
+
+            // Item Facturation
+            _drawerItem(
+              icon: Icons.handyman_rounded,
+              label: "Facturation",
+              isActive: activePage is Facturation,
+              onTap: () {
+                setState(() => activePage = const Facturation());
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
@@ -155,162 +135,83 @@ class LayoutState extends State<Layout> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFF4A9EE8),
+        elevation: 0,
         titleSpacing: 0,
-  
-        title: isSearchActive ?  
-        Row(
-          children: [
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-              
-                controller: searchController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: "Saisir le texte ici pour rechercher ...",
-                  hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
-                  border: InputBorder.none, 
-                  focusedBorder: const UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.5),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-                cursorColor: Colors.white,
-                onChanged: (value) {
-                  // TODO : logique de recherche pour les étudiants !!
-                  
-                },
-              ), 
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  isSearchActive = false;
-                });
-              },
-            )  
-          ],
-        )
-        : Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/inphblogo.png',
-                height: 40,
-              ),
-              const SizedBox(width: 15),
-
-              // LE MÊME BOUTON QUI GÉRAIT LA BARRE LATÉRALE, GÈRE MAINTENANT LE DRAWER
-              IconButton(
-                icon: const Icon(Icons.menu_rounded, size: 15),
-                onPressed: () {
-                  setState(() {
-                    isMenuActive = !isMenuActive;
-                  });
-                  // Ouvre ou ferme le drawer
-                  if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-                    _scaffoldKey.currentState?.closeDrawer();
-                  } else {
-                    _scaffoldKey.currentState?.openDrawer();
-                  }
-                },
-                style: ButtonStyle(
-                  iconColor: WidgetStateColor.resolveWith((states) {
-                    if (states.contains(WidgetState.pressed)) {
-                      return const Color(0xFF4A9EE8); 
-                    }
-                    return Colors.white;
-                  }),
-                ),
-              ),
-
-              const SizedBox(width: 3),
-
-              /*IconButton(
-                icon: const Icon(Icons.person, size: 15),
-                onPressed: () {
-                  setState(() {
-                    isPersonActive = !isPersonActive;
-                  });
-                },
-                style: ButtonStyle(
-                  iconColor: WidgetStateColor.resolveWith((states) {
-                    if (states.contains(WidgetState.pressed)) {
-                      return const Color(0xFF4A9EE8);
-                    }
-                    return Colors.white;
-                  }),
-                ),
-              ),*/
-            ],
-          ),
-        ),
-        
+        title: isSearchActive 
+          ? _buildSearchField() 
+          : _buildStandardAppBarTitle(),
         actions: isSearchActive ? [] : [
           IconButton(
-            icon: const Icon(Icons.search, size: 15),
-            onPressed: () {
-              setState(() {
-                isSearchActive = !isSearchActive;
-              });
-            },
-            style: ButtonStyle(
-              iconColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return const Color(0xFF4A9EE8);
-                }
-                return Colors.white;
-              }),
-            ),
+            icon: const Icon(Icons.search, size: 20, color: Colors.white),
+            onPressed: () => setState(() => isSearchActive = true),
           ),
-          const SizedBox(width: 10),
-
-          /*IconButton(
-            icon: const Icon(Icons.settings, size: 15),
-            onPressed: () {
-              setState(() {
-                isSettingsActive = !isSettingsActive;
-              });
-            },
-            style: ButtonStyle(
-              iconColor: WidgetStateColor.resolveWith((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return const Color(0xFF4A9EE8);
-                }
-                return Colors.white;
-              }),
-            ),
-          ),*/
-          const SizedBox(width: 10),
-
+          const SizedBox(width: 5),
           GestureDetector(
-            onTap: () {
-              setState(() {
-                isAvatarActive = !isAvatarActive;
-              });
-            },
-            child: image(20)
+            onTap: () => setState(() => isAvatarActive = !isAvatarActive),
+            child: image(18),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 15),
         ],
       ),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: activePage,
+      ),
+    );
+  }
 
-      body: activePage,
-
-      bottomNavigationBar: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Text(
-            "",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+  // --- Helper pour le titre standard de l'AppBar ---
+  Widget _buildStandardAppBarTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          // Ton Logo
+          Container(
+            height: 35,
+            width: 35,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child:  Image.asset(
+                    'assets/images/inphblogo.png',
+                    height: 40,
+                  ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            icon: const Icon(Icons.menu_rounded, color: Colors.white, size: 24),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
           ),
         ],
       ),
+    );
+  }
+
+  // --- Helper pour le champ de recherche dans l'AppBar ---
+  Widget _buildSearchField() {
+    return Row(
+      children: [
+        const SizedBox(width: 15),
+        Expanded(
+          child: TextField(
+            controller: searchController,
+            autofocus: true,
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            decoration: const InputDecoration(
+              hintText: "Rechercher...",
+              hintStyle: TextStyle(color: Colors.white60, fontSize: 14),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => setState(() => isSearchActive = false),
+        ),
+      ],
     );
   }
 }

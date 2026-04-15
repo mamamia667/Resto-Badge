@@ -70,6 +70,7 @@ class _ScannerScreenState extends State<ScannerScreen> with WidgetsBindingObserv
           // 1. Scanner avec détection optimisée
           MobileScanner(
             controller: _controller,
+            
             onDetect: (capture) async {
               if (_isRedirecting) return; // Si on est déjà en train de rediriger, on stoppe
 
