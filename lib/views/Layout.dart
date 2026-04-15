@@ -306,7 +306,7 @@ class LayoutState extends State<Layout> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: const [
           Text(
-            "© 2023 - 2026, Direction des Systèmes d'Informations (DSI)",
+            "",
             style: TextStyle(color: Colors.grey, fontSize: 12),
           ),
         ],

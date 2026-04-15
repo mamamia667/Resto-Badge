@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-
-
 class Facturation extends StatefulWidget {
   const Facturation({super.key});
 
@@ -15,7 +13,6 @@ class FacturationState extends State<Facturation> {
   bool isExpanded = true;
   final TextEditingController pinController = TextEditingController();
 
-  // ── Helper ──────────────────────────────────────────────
   bool _isTablet(BuildContext context) =>
       MediaQuery.of(context).size.shortestSide >= 600;
 
@@ -28,7 +25,6 @@ class FacturationState extends State<Facturation> {
   @override
   Widget build(BuildContext context) {
     final tablet = _isTablet(context);
-    //final screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
       child: Column(
@@ -43,14 +39,13 @@ class FacturationState extends State<Facturation> {
               children: [
                 Text(
                   "Facturation",
-                  //  Taille adaptative selon l'écran
                   style: TextStyle(
-                    fontSize: tablet ? 52 : 36,
+                    fontSize: tablet ? 42 : 28, // ← réduit : 52/36 → 42/28
                     color: Colors.grey,
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => context.go("/Dashboard"),//changer le activePage
+                  onTap: () => context.go("/Dashboard"),
                   child: const Text(
                     "Tableau de bord",
                     style: TextStyle(fontSize: 12, color: Colors.blue),
@@ -70,44 +65,52 @@ class FacturationState extends State<Facturation> {
               builder: (context, constraints) {
                 final tablet = constraints.maxWidth >= 600;
                 return GridView.count(
-                  crossAxisCount: tablet ? 2 : 1,  //  2 colonnes tablette, 1 mobile
+                  crossAxisCount: tablet ? 2 : 1,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: tablet ? 3.5 : 4.0,
+                  childAspectRatio: tablet ? 3.5 : 3.8, // ← légèrement ajusté
                   children: [
+
                     // Carte repas servis
                     StatCard(
                       color: Colors.red,
                       icon: Icons.coffee_outlined,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
-                          Text(
-                            "Nombre de repas servis : Données",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                          FittedBox( // ← CORRECTION overflow : FittedBox sur chaque Text
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Nombre de repas servis : Données",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Service en cours : Données",
-                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                          SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Service en cours : Données",
+                              style: TextStyle(fontSize: 11, color: Colors.blue),
+                            ),
                           ),
                           SizedBox(height: 2),
-                          Text(
-                            "Prix : Données",
-                            style: TextStyle(fontSize: 10, color: Colors.blue),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Prix : Données",
+                              style: TextStyle(fontSize: 11, color: Colors.blue),
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    /* Espacement adaptatif (Ajouter quand j'utilise une AVD)
-                    SizedBox(width: screenWidth * 0.03),*/
 
                     // Carte QR code
                     StatCard(
@@ -131,7 +134,7 @@ class FacturationState extends State<Facturation> {
                               side: WidgetStateProperty.all(
                                 const BorderSide(color: Color(0xFF4A9EE8), width: 1.5),
                               ),
-                              shape:  WidgetStatePropertyAll(
+                              shape: WidgetStatePropertyAll(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(3)),
                               ),
@@ -139,11 +142,14 @@ class FacturationState extends State<Facturation> {
                             onPressed: () => context.go("/scanner"),
                             child: const Text("Lecture"),
                           ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            "Cliquez pour lire le QR",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                          const SizedBox(height: 4),
+                          const FittedBox( // ← CORRECTION overflow
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Cliquez pour lire le QR",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 10, color: Colors.grey),
+                            ),
                           ),
                         ],
                       ),
@@ -171,13 +177,12 @@ class FacturationState extends State<Facturation> {
                     tilePadding: EdgeInsets.zero,
                     childrenPadding: const EdgeInsets.only(
                         left: 16.0, right: 16.0, bottom: 8.0),
-                    shape: const RoundedRectangleBorder(
-                        side: BorderSide.none),
-                    collapsedShape: const RoundedRectangleBorder(
-                        side: BorderSide.none),
+                    shape: const RoundedRectangleBorder(side: BorderSide.none),
+                    collapsedShape:
+                        const RoundedRectangleBorder(side: BorderSide.none),
                     title: const Text(
                       "Entrez votre Code Pin ou le Token de Validation",
-                      style: TextStyle(fontSize: 15),
+                      style: TextStyle(fontSize: 14), // ← réduit légèrement
                     ),
                     trailing: Icon(
                       isExpanded ? Icons.remove : Icons.add,
@@ -204,7 +209,6 @@ class FacturationState extends State<Facturation> {
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
-                        //  Bouton pleine largeur
                         width: double.infinity,
                         child: OutlinedButton(
                           style: ButtonStyle(
@@ -240,10 +244,7 @@ class FacturationState extends State<Facturation> {
           // ─── 10 dernières personnes ────────────────────
           Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                //  Limité en largeur sur tablette
-                maxWidth: /*tablet ? 600 :*/ double.infinity,
-              ),
+              constraints: const BoxConstraints(maxWidth: double.infinity),
               child: Card(
                 elevation: 11,
                 child: Padding(
@@ -296,8 +297,8 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tablet = _isTablet(context);
-    final cardHeight = tablet ? 120.0 : 100.0;
-    final iconSize = tablet ? 50.0 : 36.0;
+    final cardHeight = tablet ? 110.0 : 90.0; // ← réduit : 120/100 → 110/90
+    final iconSize = tablet ? 44.0 : 32.0;    // ← réduit : 50/36 → 44/32
 
     return Row(
       children: [
@@ -316,7 +317,7 @@ class StatCard extends StatelessWidget {
           child: Container(
             height: cardHeight,
             color: Colors.white70,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6), // ← padding vertical ajouté
             child: child,
           ),
         ),
