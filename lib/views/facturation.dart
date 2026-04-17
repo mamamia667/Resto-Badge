@@ -16,10 +16,7 @@ class FacturationState extends State<Facturation> {
   // Détection du type d'appareil
   bool _isTablet(BuildContext context) =>
       MediaQuery.of(context).size.shortestSide >= 600;
-
-  //Enregistrement
   
-
   @override
   void dispose() {
     pinController.dispose();

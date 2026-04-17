@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-// Remplace par tes vrais chemins d'importation
 import 'package:restobadge/views/dashboard.dart';
 import 'package:restobadge/views/Facturation.dart';
-
 
 class Layout extends StatefulWidget {
   const Layout({super.key});
@@ -35,6 +33,7 @@ class LayoutState extends State<Layout> {
       backgroundColor: Colors.grey[300],
       backgroundImage: const NetworkImage("https://via.placeholder.com/150"), // Mets ton URL ici
       onBackgroundImageError: (_, __) => const Icon(Icons.person, color: Colors.white),
+      //retirer quand j'ajoute l'image de la base de données ! 
       child: const Icon(
         Icons.person, 
         color: Colors.white,
