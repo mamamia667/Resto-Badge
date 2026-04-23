@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:restobadge/services/AuthService.dart';
+import 'package:restobadge/services/AuthService.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -18,16 +18,16 @@ class LoginState extends State<Login> {
     final TextEditingController loginController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     //Verifie  le contenu des champs dans authservice avec isLogin   
-    /*void submit() async {
+    void submit() async {
     // Vide l'erreur et afficher le loader
     setState(() {
       isLoading = true;
       errorMessage = null;
     });
 
-    final success = await AuthService.login(
+    final success = await Authservice.login(
       loginController.text.trim(),
-      passwordController.text.trim(),
+      passwordController.text.trim()
     );
 
     if (!mounted) return;
@@ -35,13 +35,13 @@ class LoginState extends State<Login> {
     setState(() => isLoading = false);
 
     if (success) {
-      context.go('/');             //renvoi vers facturation
+      context.go('/');             //renvoi vers Layout !
     } else {
       setState(() {
-        errorMessage = 'Login ou mot de passe incorrect.';
+        errorMessage = 'Login ou mot de passe incorrect';
       });
     }
-  }*/
+  }
 
 
 
@@ -155,11 +155,8 @@ class LoginState extends State<Login> {
 
             // Bouton Valider pleine largeur
             ElevatedButton(
-              onPressed: (
-                //connexion et redirection vers la facturation
-                ) {
-                
-                //isLoading ? null : submit;
+              onPressed: () {
+                isLoading ? null : ()=> submit();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 46, 51, 54),
